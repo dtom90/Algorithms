@@ -27,6 +27,7 @@ Output
 -1
 """
 
+
 def parse_input(func):
     t = int(input())  # "How many use cases? "
     # print('{} test cases'.format(t))
@@ -39,29 +40,19 @@ def parse_input(func):
 
 
 def max_sum(n, seq):
-    # print(seq)
-    all_negs = True
-    all_pos = True
+    max_so_far = -float("inf")
+    max_ending_here = 0
+
     for i in seq:
-        if i > 0:
-            all_negs = False
-        elif i < 0:
-            all_pos = False
-    if all_negs and all_pos:
-        return 0
-    else:
-        if all_pos:
-            return sum(seq)
-        elif all_negs:
-            return max(seq)
-        else:
-            m_sum = -float("inf")
-            for j in range(n):
-                for k in range(j+1, n+1):
-                    this_sum = sum(seq[j:k])
-                    if this_sum > m_sum:
-                        m_sum = this_sum
-            return m_sum
+        max_ending_here = max_ending_here + i
+
+        if max_so_far < max_ending_here:
+            max_so_far = max_ending_here
+
+        if max_ending_here < 0:
+            max_ending_here = 0
+
+    return max_so_far
 
 
 parse_input(max_sum)
