@@ -97,3 +97,6 @@ def find_median_in_stream(x, seq, length):
 
 
 parse_input(find_median_in_stream)
+
+
+# Next idea: maintain a binary tree
