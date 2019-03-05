@@ -40,63 +40,108 @@ Flow in stream : 5, 15, 1, 3
 """
 
 
-DEBUG = True
+DEBUG = False
 
 
-def parse_input(func):
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.right = None
+        self.left = None
+        self.right_count = 0
+        self.left_count = 0
+
+    def left_first(self, function, **kwargs):
+        if self.left:
+            self.left.left_first(function, **kwargs)
+        function(self.value, **kwargs)
+        if self.right:
+            self.right.left_first(function, **kwargs)
+
+
+class MedBinTree:
+    def __init__(self):
+        self.root = None
+        self.length = 0
+
+    def add(self, new_val):
+
+        if not self.root:
+            self.root = Node(new_val)
+        else:
+            node = self.root
+            right = new_val > node.value
+            next = node.right if right else node.left
+            if right:
+                node.right_count += 1
+            else:
+                node.left_count += 1
+            while next:
+                node = next
+                right = new_val > node.value
+                next = node.right if right else node.left
+                if right:
+                    node.right_count += 1
+                else:
+                    node.left_count += 1
+
+            if right:
+                node.right = Node(new_val)
+            else:
+                node.left = Node(new_val)
+
+        self.length += 1
+
+    def get_median(self):
+        # print(self.length)
+        low = int((self.length-1) / 2)
+        targets = [low]
+        if self.length % 2 == 0:
+            targets.append(low+1)
+
+        node = self.root
+        position = node.left_count
+
+        vals = []
+        while targets:
+            while position not in targets:
+                prev_position = position
+                if targets[0] > position:
+                    node = node.right
+                    position += node.left_count + 1
+                else:
+                    node = node.left
+                    position -= node.right_count + 1
+                if position == prev_position:
+                    return position
+            vals.append(node.value)
+            targets.remove(position)
+
+        if len(vals) == 1:
+            return vals[0]
+        else:
+            return int((vals[0]+vals[1])/2)
+
+    def print(self):
+        self.root.left_first(print, end=' ')
+        print()
+
+
+def parse_input():
+
     n = int(input())
-    # if DEBUG: print('n = {}'.format(n))
-    seq = []
+    if DEBUG: print('n = {}'.format(n))
+
+    bin_tree = MedBinTree()
+
     for i in range(n):
         x = int(input())
-        # if DEBUG: print('x = {}'.format(x))
-        seq = func(x, seq, i)
+        if DEBUG: print('x = {}'.format(x))
+
+        bin_tree.add(x)
+        if DEBUG: bin_tree.print()
+
+        print(bin_tree.get_median())
 
 
-def find_median_in_stream(x, seq, length):
-    # print(x, seq, length)
-
-    if length == 0:
-        seq.append(x)
-    else:
-        i = int(length/2)
-        if length % 2 == 0:
-            i -= 1
-        sub = max(int(length/4), 1)
-        inserted = False
-
-        while not inserted and 0 <= i <= length-1:
-
-            if i == 0 and x < seq[i]:
-                seq.insert(0, x)
-                inserted = True
-            elif i == length-1 and x > seq[i]:
-                seq.append(x)
-                inserted = True
-            elif seq[i] < x < seq[i + 1]:
-                seq.insert(i + 1, x)
-                inserted = True
-            elif seq[i + 1] < x:
-                i += sub
-            else:
-                i -= sub
-            sub = max(int(sub/2), 1)
-        length += 1
-
-    # if DEBUG: print(seq)
-    if length == 1:
-        med = seq[0]
-    elif length % 2 == 0:
-        a = int(length / 2)
-        med = (seq[a-1] + seq[a]) / 2
-    else:
-        med = seq[int(length / 2)]
-    print(int(med))
-
-    return seq
-
-
-parse_input(find_median_in_stream)
-
-
-# Next idea: maintain a binary tree
+parse_input()
