@@ -1,4 +1,4 @@
-3
+1
 abcdecba 1
 acdcb  1
 nwnk 1

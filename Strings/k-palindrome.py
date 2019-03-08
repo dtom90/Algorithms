@@ -41,27 +41,40 @@ def parse_input():
 
 
 def is_k_palin(string, n):
-    rev_string = string[::-1]
-    if string == rev_string:
-        return 1
+    print(string, n)
 
-    inequals = []
-    for i, c in enumerate(string):
-        if c != rev_string[i]:
-            inequals.append(i)
+    a = 0
+    z = len(string)-1
 
-    powerset = chain.from_iterable(combinations(inequals, r) for r in range(len(inequals)+1))
+    removed = 0
+    equal = True
+    low_grp = {}
+    hi_grp = {}
+    while a < z:
+        print(string[a], string[z])
+        if not equal:
+            low_grp[string[a]] += 1
+            hi_grp[string[z]] += 1
+            diff = 0
+            for letter, count in low_grp.items():
+                if letter in hi_grp:
+                    diff += abs(count - hi_grp[letter])
+                else:
+                    diff += count
+            for letter in hi_grp:
+                if letter not in low_grp:
+                    diff += hi_grp[letter]
+            print(diff)
 
-    for drops in powerset:
-        if len(drops) > n:
-            return 0
-        substr = string
-        for idx in drops:
-            substr = string[:idx] + string[idx + 1:]
+        if string[a] != string[z]:
+            print('inequal!')
+            equal = False
+            low_grp[string[a]] = 1
+            hi_grp[string[z]] = 1
+        a += 1
+        z -= 1
 
-        if substr == substr[::-1]:
-            return 1
-    return 0
+    return low_grp, hi_grp
 
 
 parse_input()
