@@ -47,21 +47,23 @@ def parse_input():
 
 
 def max_activites(n, starts, ends):
+    activities = [(starts[i], ends[i]) for i in range(n)]
+    activities.sort()
     max_b = 0
     for i in range(n):
-        new_branch = max_branch(i, 1, n, starts, ends)
+        new_branch = max_branch(i, 1, n, activities)
         if new_branch > max_b:
             max_b = new_branch
     return max_b
 
 
-def max_branch(i, d, n, starts, ends):
+def max_branch(i, d, n, activities):
     max_b = 0
     leaf = True
-    for j in range(n):
-        if ends[i] < starts[j]:
+    for j in range(i+1, n):
+        if activities[i][1] < activities[j][0]:
             leaf = False
-            new_branch = max_branch(j, d+1, n, starts, ends)
+            new_branch = max_branch(j, d+1, n, activities)
             if new_branch > max_b:
                 max_b = new_branch
     if leaf:
